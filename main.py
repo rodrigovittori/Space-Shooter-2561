@@ -1,7 +1,7 @@
 #pgzero
 import random
 
-""" > M6.L1 · Actividad #3: "Naves hostiles"
+""" > M6.L1 · Actividad #4: "Relanzamiento de naves enemigas"
 
 Kenney assets:
 
@@ -10,23 +10,24 @@ Extra: https://kenney.nl/assets/space-shooter-redux
 Planetas: https://kenney.nl/assets/planets
 UI: https://kenney.nl/assets/ui-pack-sci-fi
 
-Objetivo: Agregar lógica de spawn de enemigos
-Prox. Actividad: "Reciclar"/Reemplazar naves enemigas que se salgan de la pantalla de juego
+Objetivo: "Reciclar"/Reemplazar naves enemigas que se salgan de la pantalla de juego
+Prox. Actividad: Implementar colisiones
 
-Paso Nº 1: importamos la librería random
-Paso Nº 2: Definimos la cantidad de enemigos a spawnear (constante CANT_ENEMIGOS)
-Paso Nº 3: Creamos nuestra lista_enemigos
-Paso Nº 4: Creamos el bucle de spawn
-Paso Nº 5: Agregamos la función que maneja el avance de la flota enemiga
-Paso Nº 6: Agregamos un bucle for en nuestro draw() que dibuje las naves enemigas
-Paso Nº 7: Agregamos nuesto update() que incluirá una llamada a mov_flota_enemiga()
-"""
+Paso Nº 1: Convertir el bucle FOR de spawn a una función
+Paso Nº 2: Agregar antes de la primer ejecución de mi update() un bucle for para spawnear a los primeros enemigos
+Paso Nº 3: Modificar mi fn mov_flota_enemiga() para que las naves que salgan de la pantalla sean recicladas o reemplazadas
+
+    ##################
+   # VENTANA PGZERO #
+  ################## """
 
 WIDTH = 600
 HEIGHT = 450
 
 TITLE = "GUERRA GALÁCTICA"
 FPS = 30
+
+""" ***************************************************************** """
 
 # Objetos y Variables
 CANT_ENEMIGOS = 5 # Cantidad de enemigos a spawnear
@@ -37,39 +38,58 @@ fondo = Actor("space")
 # Listas
 lista_enemigos = []
 
+""" ***************************************************************** """
+
 # To-do: Convertir a una función
 
-for e in range(CANT_ENEMIGOS):
-  # Setear coordenadas random (importamos la librería)
-  x = random.randint(50, WIDTH-50)
-  y = random.randint(-200, -50)
+def spawn_nvo_enemigo(tipo=""):
 
-  # To-do: permitir que haya más de un tipo de enemigo
-  # To-do: chequear que no se superpongan los enemigos entre sí
-
-  # Creamos el nvo_enemigo
-  nvo_enemigo = Actor("enemy", (x, y))
-  nvo_enemigo.velocidad = random.randint(4, 8)
+  # Determinar tipo de enemigo a añadir:
+    if tipo == "":
+        tipo = "enemy"
+  
+    # Setear coordenadas random (importamos la librería)
+    x = random.randint(50, WIDTH-50)
+    y = random.randint(-200, -50)
+  
+    # To-do: permitir que haya más de un tipo de enemigo
+    # To-do: chequear que no se superpongan los enemigos entre sí
+  
+    # Crear nvo_enemigo según el tipo:
+    nvo_enemigo = Actor(tipo, (x, y))
     
-  """ Nota: Si yo quiero que la velocidad de los enemigos sea un factor
-            de la dificultad del juego, en lugar de ser random p/cada
-            nave, puedo crear una variable global llamada "velocidad_naves_enemigas"
-            (o algo así) y actualizarlo cuando lo necesite """
-             
-  lista_enemigos.append(nvo_enemigo)
-
-# FUNCIONES PROPIAS
+    """ Nota: Si yo quiero que la velocidad de los enemigos sea un factor
+              de la dificultad del juego, en lugar de ser random p/cada
+              nave, puedo crear una variable global llamada "velocidad_naves_enemigas"
+              (o algo así) y actualizarlo cuando lo necesite
+              
+        # Si mis enemigos tienen cambios según su tipo:
+    
+        if tipo == "enemy":
+          *modificamos lo que tengamos que modificar: velocidad, salud, bonus que dropea, etc*
+              
+    """
+    nvo_enemigo.velocidad = random.randint(4, 8) # o variable global
+    # Cuando mi nuevo enemigo está listo, lo agrego a la lista:
+    lista_enemigos.append(nvo_enemigo)
+    ##########################################
 
 def mov_flota_enemiga():
+    
   for nave_enemiga in lista_enemigos:
-    nave_enemiga.y += nave_enemiga.velocidad
+      if (nave_enemiga.y > (HEIGHT + nave_enemiga.height)): # Si se salió de la pantalla
+            # La reciclamos:
+            nave_enemiga.y = random.randint(-200, -50)
+            nave_enemiga.x = random.randint(50, WIDTH - 50)
+            # Nota: si cambiamos la velocidad según la dificultad, modificar ésto:
+            nave_enemiga.velocidad = random.randint(4, 8) # o variable global
+    
+      else:
+            nave_enemiga.y += nave_enemiga.velocidad
 
-    """ To-do: evitar que las naves salgan de la pantalla
-
-        OPCION 1: ELIMINARLAS
-        OPCION 2: RECICLARLAS """
-
-# Funciones PGZERO
+""" #####################
+   # FUNCIONES PG ZERO #
+  ##################### """
 
 def draw():
   fondo.draw()
@@ -86,6 +106,18 @@ def draw():
 
 def on_mouse_move(pos):
   nave.pos = pos
+
+"""  #####################
+    # INICIALIZAR JUEGO #
+   #####################  """
+
+# To-do: convertir a FN p/ iniciar/reiniciar el juego
+for e in range(CANT_ENEMIGOS):
+  spawn_nvo_enemigo()
+
+##################
+# BUCLE DE JUEGO #
+##################
 
 def update(dt):
   mov_flota_enemiga()
