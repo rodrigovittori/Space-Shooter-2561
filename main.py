@@ -1,7 +1,7 @@
 #pgzero
 import random
 
-""" > M6.L2 · Actividad #2: "Menú de inicio"
+""" > M6.L2 · Actividad #3: "El método collidepoint"
 
 Kenney assets:
 
@@ -10,16 +10,12 @@ Extra: https://kenney.nl/assets/space-shooter-redux
 Planetas: https://kenney.nl/assets/planets
 UI: https://kenney.nl/assets/ui-pack-sci-fi
 
-Objetivo: Mostrar por pantalla tres modelos de naves para seleccionar 
-Prox. Actividad: Lógica de selección de modelo de nave espacial
+Objetivo: Detectar los clicks sobre los modelos de naves que presentamos al jugador y seleccionar uno 
+Prox. Actividad: Disparos
 
-> Nota: NECESITAMOS la implementación de planetas y meteoros
-> Nota 2: La actividad #1 de esta clase NO está relacionada al space shooter
-> Nota 3: En esta actividad el click NO debe seleccionar el modelo (es sólo dibujarlo)
-
-Paso Nº 1) Restaurar el código de los planetas
-Paso Nº 2) Creamos los actores de los modelos para elegir y cambiamos nuestra variable modo_actual a "menu"
-Paso Nº 3) Modificamos nuestro draw() para que las muestre
+Paso Nº 1) agregar nuestra función on_mouse_down()
+Paso Nº 2) Comprobar sobre qué modelo el jugador hace click
+Paso Nº 3) Cambiar el modelo de la nave que controlamos al que fue seleccionado e iniciar el juego
 
     ##################
    # VENTANA PGZERO #
@@ -37,7 +33,6 @@ FPS = 30
 CANT_ENEMIGOS = 5 # Cantidad de enemigos a spawnear
 CANT_METEOROS = 4 # Cantidad de meteoros a spawnear
 modo_actual = "menu" # Valores posibles: "juego" / "game_over" / "menu"
-
 
 nave = Actor("ship", (300,300))
 fondo = Actor("space")
@@ -255,10 +250,25 @@ def draw():
       tipo2.draw()
       tipo3.draw()
     
-
 def on_mouse_move(pos):
   if (modo_actual == "juego"):
     nave.pos = pos
+
+def on_mouse_down(button, pos):
+    global modo_actual
+
+    if ((modo_actual == "menu") and (tipo1.collidepoint(pos))):
+        nave.image = "ship1"
+        modo_actual = "juego"
+        
+    elif ((modo_actual == "menu") and (tipo2.collidepoint(pos))):
+        nave.image = "ship2"
+        modo_actual = "juego"
+    
+    elif ((modo_actual == "menu") and (tipo3.collidepoint(pos))):
+        nave.image = "ship3"
+        modo_actual = "juego"
+    
 
 """  #####################
     # INICIALIZAR JUEGO #
