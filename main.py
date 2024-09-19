@@ -1,8 +1,8 @@
 #pgzero
 import random
 
-""" > M6.L2 · Actividad #7: "Puntuación" (Tarea Adicional)
-Objetivo: Implementar un sistema de puntuación y mostrarlo por pantalla
+""" > M6.L2 · Actividad #8: "Volver a empezar el juego" (Tarea Adicional)
+Objetivo: Crear una función que se encargue de resetear los valores necesarios para reiniciar el juego
 
 Kenney assets:
 
@@ -11,13 +11,13 @@ Extra: https://kenney.nl/assets/space-shooter-redux
 Planetas: https://kenney.nl/assets/planets
 UI: https://kenney.nl/assets/ui-pack-sci-fi
 
+Prox. Actividad: Publicar en HUB
 
-Prox. Actividad: (Adicionales): Reiniciar partida
-
-Paso Nº 1) Crear una variable global llamada puntuacion
-Paso Nº 2) Modificar nuestro draw() para que en lugar de mostrar las coordenadas de nuestra nave nos muestre la puntuación actual
-           > al activarse un game_over, mostrar la puntuación al jugador
-Paso Nº 3) Agregamos condiciones en nuestra función detectar_colisiones() para que al destruír enemigos y meteoros nuestra puntuación aumente
+Paso Nº 1) Crear una función que se encargue de eliminar enemigos y proyectiles, reestablecer la variables y actores a sus valores originales y spawnear enemigos
+Paso Nº 2) Vaciar lista de enemigos, meteoros y proyectiles
+Paso Nº 3) Resetear la posición de los planetas
+Paso Nº 4) Spawnear enemigos
+Paso Nº 5) Modificar el check en update() para que cuando sea game_over, si presionamos enter se llame a la función reiniciar_juego()
            
     ##################
    # VENTANA PGZERO #
@@ -236,6 +236,34 @@ def comprobar_colisiones():
                 spawn_nvo_meteorito()
                 break
 
+""" *********************************************************** """
+
+def reiniciar_juego():
+    global modo_actual, puntuacion
+
+    nave.image = "ship"  # resetear modelo nave
+    puntuacion = 0       # resetear puntuacion
+    modo_actual = "menu" # cambiar modo a menú
+
+    # Vaciar listas:
+    del lista_enemigos[:]
+    del lista_meteoritos[:]  
+    del lista_proyectiles[:]
+
+    # resetear posición planetas
+    for planeta_actual in range(len(lista_planetas)):
+        lista_planetas[planeta_actual].pos = (random.randint(0, WIDTH), random.randint( (-400 * (1 + planeta_actual)), (-50 - (-400 * planeta_actual))))
+        lista_planetas[planeta_actual].angle = random.randint(0,359)
+
+    # Spawnear enemigos    
+    for e in range(CANT_ENEMIGOS):
+        # Nota: en caso de agregar más tipos de enemigos, modificar el spawn para que sea random
+        spawn_nvo_enemigo()
+    
+    for m in range(CANT_METEOROS):
+        spawn_nvo_meteorito()
+########################################
+        
 """ #####################
    # FUNCIONES PG ZERO #
   ##################### """
@@ -320,12 +348,7 @@ def on_mouse_down(button, pos):
     # INICIALIZAR JUEGO #
    #####################  """
 
-# To-do: convertir a FN p/ iniciar/reiniciar el juego
-for e in range(CANT_ENEMIGOS):
-  spawn_nvo_enemigo()
-
-for m in range(CANT_METEOROS):
-  spawn_nvo_meteorito()
+reiniciar_juego()
 
 ##################
 # BUCLE DE JUEGO #
@@ -343,5 +366,4 @@ def update(dt):
   
   elif (modo_actual == "game_over"):
     if keyboard.enter:
-      modo_actual = "juego"
-      # To-Do: agregar función reset_game()
+      reiniciar_juego()
