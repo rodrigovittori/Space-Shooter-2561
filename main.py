@@ -1,7 +1,7 @@
 #pgzero
 import random
 
-""" > M6.L1 · Actividad #9: "Meteoritos (Homework / Tarea pa' la casa)"
+""" > M6.L2 · Actividad #2: "Menú de inicio"
 
 Kenney assets:
 
@@ -10,25 +10,16 @@ Extra: https://kenney.nl/assets/space-shooter-redux
 Planetas: https://kenney.nl/assets/planets
 UI: https://kenney.nl/assets/ui-pack-sci-fi
 
-Objetivo: Agregar meteoritos e implementar la lógica necesaria 
-Prox. Actividad: [PROXIMA CLASE]
+Objetivo: Mostrar por pantalla tres modelos de naves para seleccionar 
+Prox. Actividad: Lógica de selección de modelo de nave espacial
 
-> Nota: Este ejercicio el profe lo resuelve un poquito distinto a lo planteado por Kodland
+> Nota: NECESITAMOS la implementación de planetas y meteoros
+> Nota 2: La actividad #1 de esta clase NO está relacionada al space shooter
+> Nota 3: En esta actividad el click NO debe seleccionar el modelo (es sólo dibujarlo)
 
-> Nota 2: deshabilitamos las partes del código de los planetas porque la HW
-          NO tiene cargados los assets de los planetas
-
-> Nota 3: Reorganizamos código
-
-Paso Nº 1) Como Kodland NO tiene cargado por defecto las imágenes de los planetas, comentamos toda referencia a ello (por este ejercicio)
-           > creacion y lista de planetas + llama a mov_planetas() en nuestro update()
-Paso Nº 2) Creamos una lista de meteoros, y una constante que almacene la cantidad de meteoritos en pantalla
-Paso Nº 3) Creamos una función que se encargue de spawnear meteoros (recordar modificar el check de colisiones en el spawn de naves enemigas)
-Paso Nº 4) Creamos una función que se encargue de su movimiento
-Paso Nº 5) Modificar nuestro control de colisiones
-Paso Nº 6) Modificamos nuestro draw() para que dibuje por pantalla los meteoritos
-Paso Nº 7) Agregamos un bucle for que spawnee los meteoros al iniciar la partida
-Paso Nº 8) Agregamos una llamada a mover_meteoritos() en nuestro update()
+Paso Nº 1) Restaurar el código de los planetas
+Paso Nº 2) Creamos los actores de los modelos para elegir y cambiamos nuestra variable modo_actual a "menu"
+Paso Nº 3) Modificamos nuestro draw() para que las muestre
 
     ##################
    # VENTANA PGZERO #
@@ -45,11 +36,16 @@ FPS = 30
 # Objetos y Variables
 CANT_ENEMIGOS = 5 # Cantidad de enemigos a spawnear
 CANT_METEOROS = 4 # Cantidad de meteoros a spawnear
-modo_actual = "juego" # Valores posibles: "juego" / "game_over"
+modo_actual = "menu" # Valores posibles: "juego" / "game_over" / "menu"
 
 
 nave = Actor("ship", (300,300))
 fondo = Actor("space")
+
+# Modelos Naves
+tipo1 = Actor("ship1", (100, 225))
+tipo2 = Actor("ship2", (300, 225))
+tipo3 = Actor("ship3", (500, 225))
 
 # Listas
 lista_enemigos = []
@@ -58,7 +54,6 @@ lista_meteoritos = []
 
 """ ****************************** [ PLANETAS ] ****************************** """
 
-"""
 # Creamos los planetas
 planeta_1 = Actor("plan1", (random.randint(0, WIDTH), random.randint(-400, -50)))
 planeta_1.angle = random.randint(0,359)
@@ -71,7 +66,6 @@ lista_planetas.append(planeta_2)
 planeta_3 = Actor("plan3", (random.randint(0, WIDTH), random.randint(-1200, -850)))
 planeta_3.angle = random.randint(0,359)
 lista_planetas.append(planeta_3)
-"""
 
 def mov_planetas(delta_y):
   for planeta_actual in lista_planetas:
@@ -252,6 +246,16 @@ def draw():
       # To-do: Mostrar cartel "Presione [Enter] para reiniciar"
       #        -> To-Do: agregar función reset_game()
 
+  elif (modo_actual == "menu"):
+      fondo.draw()
+    
+      screen.draw.text("ELIGE TU NAVE", center=(int(WIDTH/2), int(HEIGHT/4)), color = "white", background="black", fontsize = 36)
+
+      tipo1.draw()
+      tipo2.draw()
+      tipo3.draw()
+    
+
 def on_mouse_move(pos):
   if (modo_actual == "juego"):
     nave.pos = pos
@@ -275,7 +279,7 @@ def update(dt):
   global modo_actual
   
   if (modo_actual == "juego"):
-    #mov_planetas(1) # Nota: si modifico el juego para que tenga velocidad variable, asegurarme de actualizar el delta_y
+    mov_planetas(1) # Nota: si modifico el juego para que tenga velocidad variable, asegurarme de actualizar el delta_y
     mov_flota_enemiga()
     mov_meteoritos()
     comprobar_colisiones()
