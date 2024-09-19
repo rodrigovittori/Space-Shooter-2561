@@ -1,7 +1,8 @@
 #pgzero
 import random
 
-""" > M6.L2 · Actividad #5: "Colisiones de proyectiles"
+""" > M6.L2 · Actividad #7: "Puntuación" (Tarea Adicional)
+Objetivo: Implementar un sistema de puntuación y mostrarlo por pantalla
 
 Kenney assets:
 
@@ -10,15 +11,13 @@ Extra: https://kenney.nl/assets/space-shooter-redux
 Planetas: https://kenney.nl/assets/planets
 UI: https://kenney.nl/assets/ui-pack-sci-fi
 
-Objetivo: Agregar colisiones a los proyectiles
-Prox. Actividad: (Adicionales): Puntuación y Reiniciar partida
 
-Paso Nº 1) Modificar la función colisiones para que, en caso de un proyectil impactar una nave enemiga o un meteorito, lo destruya
-Paso Nº 2) Agregamos un bucle for que compruebe la colisión entre naves enemigas y proyectiles
-           > en caso de colisión, spawnearemos un nuevo enemigo 
-Paso Nº 3) Agregamos un bucle for que compruebe la colisión entre meteoritos y proyectiles
-           > en caso de colisión, spawnearemos un nuevo meteorito
+Prox. Actividad: (Adicionales): Reiniciar partida
 
+Paso Nº 1) Crear una variable global llamada puntuacion
+Paso Nº 2) Modificar nuestro draw() para que en lugar de mostrar las coordenadas de nuestra nave nos muestre la puntuación actual
+           > al activarse un game_over, mostrar la puntuación al jugador
+Paso Nº 3) Agregamos condiciones en nuestra función detectar_colisiones() para que al destruír enemigos y meteoros nuestra puntuación aumente
            
     ##################
    # VENTANA PGZERO #
@@ -36,6 +35,7 @@ FPS = 30
 CANT_ENEMIGOS = 5 # Cantidad de enemigos a spawnear
 CANT_METEOROS = 4 # Cantidad de meteoros a spawnear
 modo_actual = "menu" # Valores posibles: "juego" / "game_over" / "menu"
+puntuacion = 0
 
 nave = Actor("ship", (300,300))
 fondo = Actor("space")
@@ -208,7 +208,7 @@ def mov_proyectiles():
 """ ****************************** [ COLISIONES ] ****************************** """
 
 def comprobar_colisiones():
-    global modo_actual
+    global modo_actual, puntuacion
     # Comprobar colisiones con enemigos
     for nave_enemiga in lista_enemigos:
         if nave.colliderect(nave_enemiga):
@@ -216,11 +216,12 @@ def comprobar_colisiones():
 
         for p in lista_proyectiles:
             if p.colliderect(nave_enemiga):
-                # To-do: aumentar puntuación (eliminé enemigo)
+                puntuacion += 100
                 # To-do: agregar explosión
                 lista_enemigos.remove(nave_enemiga)
                 lista_proyectiles.remove(p)
-                spawn_nvo_enemigo() 
+                spawn_nvo_enemigo()
+                break
 
     for meteorito in lista_meteoritos:
         if nave.colliderect(meteorito):
@@ -228,11 +229,12 @@ def comprobar_colisiones():
 
         for p in lista_proyectiles:
             if p.colliderect(meteorito):
-                # To-do: aumentar puntuación (eliminé meteorito)
+                puntuacion += 20
                 # To-do: agregar explosión
                 lista_meteoritos.remove(meteorito)
                 lista_proyectiles.remove(p)
                 spawn_nvo_meteorito()
+                break
 
 """ #####################
    # FUNCIONES PG ZERO #
@@ -258,8 +260,10 @@ def draw():
       
       #screen.draw.text(TITLE, center=(300, 100), color="white", background="black")
     
-      texto_temp = "Coord: (x: " + str(int(nave.x)) + ", y: " + str(int(nave.y)) + ")"
-      screen.draw.text(texto_temp, midleft=(20, 20), color = "white", fontsize = 24)
+      #texto_temp = "Coord: (x: " + str(int(nave.x)) + ", y: " + str(int(nave.y)) + ")"
+      #screen.draw.text(texto_temp, midleft=(20, 20), color = "white", fontsize = 24)
+
+      screen.draw.text(( "Puntuación: " + str(puntuacion)), midleft=(20, 20), color = "white", fontsize = 24)
     
       nave.draw()
 
@@ -271,8 +275,8 @@ def draw():
 
       screen.draw.text("¡TE ESTRELLASTE!", center=(int(WIDTH/2), int(HEIGHT/2)), color = "red", background = "black", fontsize = 48)
 
-      # To-do: agregar mostrar puntuación final
-      # To-do: Mostrar cartel "Presione [Enter] para reiniciar"
+      screen.draw.text(("Puntaje final : " + str(puntuacion)), center = (300,300), color="yellow", fontsize = 24)
+      screen.draw.text("Pulsa [Enter] para reiniciar", center = (300, 400), color = "white", fontsize = 24)
       #        -> To-Do: agregar función reset_game()
 
   elif (modo_actual == "menu"):
