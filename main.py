@@ -1,7 +1,7 @@
 #pgzero
 import random
 
-""" > M6.L2 · Actividad #3: "El método collidepoint"
+""" > M6.L2 · Actividad #4: "Disparos"
 
 Kenney assets:
 
@@ -10,12 +10,14 @@ Extra: https://kenney.nl/assets/space-shooter-redux
 Planetas: https://kenney.nl/assets/planets
 UI: https://kenney.nl/assets/ui-pack-sci-fi
 
-Objetivo: Detectar los clicks sobre los modelos de naves que presentamos al jugador y seleccionar uno 
-Prox. Actividad: Disparos
+Objetivo: Que al hacer click primario nuestra nave "dispare" misiles
+Prox. Actividad: Colisiones de los proyectiles
 
-Paso Nº 1) agregar nuestra función on_mouse_down()
-Paso Nº 2) Comprobar sobre qué modelo el jugador hace click
-Paso Nº 3) Cambiar el modelo de la nave que controlamos al que fue seleccionado e iniciar el juego
+Paso Nº 1) Crear nuestra lista de proyectiles
+Paso Nº 2) modificar nuestra función on_mouse_down() para que mientras estemos en modo juego cada click izquierdo cree un nuevo proyectil
+Paso Nº 3) Crear una función que se encargue del movimiento de los proyectiles
+Paso Nº 4) modificar nuestro draw() para que muestre en pantalla los proyectiles
+Paso Nº 5) actualizar nuestro update() para que llame a mov_proyectiles()
 
     ##################
    # VENTANA PGZERO #
@@ -46,6 +48,7 @@ tipo3 = Actor("ship3", (500, 225))
 lista_enemigos = []
 lista_planetas = []
 lista_meteoritos = []
+lista_proyectiles = []
 
 """ ****************************** [ PLANETAS ] ****************************** """
 
@@ -192,6 +195,15 @@ def mov_meteoritos():
       else:
             meteorito.y += meteorito.velocidad
 
+""" ****************************** [ PROYECTILES ] ****************************** """
+def mov_proyectiles():
+    for p in lista_proyectiles:
+        if (p.y < -p.height): # Si se salió de la pantalla
+            lista_proyectiles.remove(p)
+        else:
+            # Nota: si cambiamos la velocidad de los proyectiles según power-ups, modificar aquí:
+            p.y -= 10 # velocidad de proyectiles
+
 """ ****************************** [ COLISIONES ] ****************************** """
 
 def comprobar_colisiones():
@@ -215,12 +227,17 @@ def draw():
 
       for planeta in lista_planetas:
           planeta.draw()
-      
-      for nave_enemiga in lista_enemigos:
-        nave_enemiga.draw()
 
       for meteorito in lista_meteoritos:
-        meteorito.draw()
+          meteorito.draw()
+
+      for proyectil in lista_proyectiles:
+          proyectil.draw()
+      
+      for nave_enemiga in lista_enemigos:
+          nave_enemiga.draw()
+
+      
       
       #screen.draw.text(TITLE, center=(300, 100), color="white", background="black")
     
@@ -268,7 +285,15 @@ def on_mouse_down(button, pos):
     elif ((modo_actual == "menu") and (tipo3.collidepoint(pos))):
         nave.image = "ship3"
         modo_actual = "juego"
-    
+
+    ########################
+
+    if ((modo_actual == "juego") and (button == mouse.LEFT)):
+        nvo_proyectil = Actor("missiles", nave.pos)
+        # NOTA: si quiero tener distintos tipos de proyectiles con distintas velocidades debería agregar un atributo al Actor
+        #       según el tipo de proyectil será su velocidad y daño pero
+        # NOTA 2: Puedo agregar un timer que controle el cooldown/recarga entre disparos
+        lista_proyectiles.append(nvo_proyectil)
 
 """  #####################
     # INICIALIZAR JUEGO #
@@ -290,8 +315,9 @@ def update(dt):
   
   if (modo_actual == "juego"):
     mov_planetas(1) # Nota: si modifico el juego para que tenga velocidad variable, asegurarme de actualizar el delta_y
-    mov_flota_enemiga()
     mov_meteoritos()
+    mov_flota_enemiga()
+    mov_proyectiles()
     comprobar_colisiones()
   
   elif (modo_actual == "game_over"):
