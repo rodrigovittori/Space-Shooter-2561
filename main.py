@@ -1,7 +1,7 @@
 #pgzero
 import random
 
-""" > M6.L2 · Actividad #4: "Disparos"
+""" > M6.L2 · Actividad #5: "Colisiones de proyectiles"
 
 Kenney assets:
 
@@ -10,15 +10,16 @@ Extra: https://kenney.nl/assets/space-shooter-redux
 Planetas: https://kenney.nl/assets/planets
 UI: https://kenney.nl/assets/ui-pack-sci-fi
 
-Objetivo: Que al hacer click primario nuestra nave "dispare" misiles
-Prox. Actividad: Colisiones de los proyectiles
+Objetivo: Agregar colisiones a los proyectiles
+Prox. Actividad: (Adicionales): Puntuación y Reiniciar partida
 
-Paso Nº 1) Crear nuestra lista de proyectiles
-Paso Nº 2) modificar nuestra función on_mouse_down() para que mientras estemos en modo juego cada click izquierdo cree un nuevo proyectil
-Paso Nº 3) Crear una función que se encargue del movimiento de los proyectiles
-Paso Nº 4) modificar nuestro draw() para que muestre en pantalla los proyectiles
-Paso Nº 5) actualizar nuestro update() para que llame a mov_proyectiles()
+Paso Nº 1) Modificar la función colisiones para que, en caso de un proyectil impactar una nave enemiga o un meteorito, lo destruya
+Paso Nº 2) Agregamos un bucle for que compruebe la colisión entre naves enemigas y proyectiles
+           > en caso de colisión, spawnearemos un nuevo enemigo 
+Paso Nº 3) Agregamos un bucle for que compruebe la colisión entre meteoritos y proyectiles
+           > en caso de colisión, spawnearemos un nuevo meteorito
 
+           
     ##################
    # VENTANA PGZERO #
   ################## """
@@ -213,9 +214,25 @@ def comprobar_colisiones():
         if nave.colliderect(nave_enemiga):
             modo_actual = "game_over" # Terminamos el juego
 
+        for p in lista_proyectiles:
+            if p.colliderect(nave_enemiga):
+                # To-do: aumentar puntuación (eliminé enemigo)
+                # To-do: agregar explosión
+                lista_enemigos.remove(nave_enemiga)
+                lista_proyectiles.remove(p)
+                spawn_nvo_enemigo() 
+
     for meteorito in lista_meteoritos:
         if nave.colliderect(meteorito):
             modo_actual = "game_over" # Terminamos el juego
+
+        for p in lista_proyectiles:
+            if p.colliderect(meteorito):
+                # To-do: aumentar puntuación (eliminé meteorito)
+                # To-do: agregar explosión
+                lista_meteoritos.remove(meteorito)
+                lista_proyectiles.remove(p)
+                spawn_nvo_meteorito()
 
 """ #####################
    # FUNCIONES PG ZERO #
